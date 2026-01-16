@@ -9,5 +9,5 @@ query = """
     ORDER BY count DESC
     LIMIT 1
 """
-
+# Get the result
 result = duckdb.sql(query).fetchone()
