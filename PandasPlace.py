@@ -30,7 +30,8 @@ def analyze_rplace(start_str, end_str, file_path=DATA_FILE_PATH):
 
         # Convert timestamp column to datetime objects
         # errors='coerce' will turn unparseable dates into NaT (Not a Time) instead of crashing
-        df['timestamp'] = pd.to_datetime(df['timestamp'], errors='coerce')
+        # .dt.tz_localize(None) removes timezone info if present, Pandas will refuse to compare tz-aware and tz-naive datetimes
+        df['timestamp'] = pd.to_datetime(df['timestamp'], errors='coerce').dt.tz_localize(None)
 
         # Filter for the requested timeframe
         # Using the datetime objects directly for comparison
@@ -71,13 +72,13 @@ def analyze_rplace(start_str, end_str, file_path=DATA_FILE_PATH):
     except FileNotFoundError:
         print(f"Error: The file '{file_path}' was not found.")
     except MemoryError:
-        print("Error: The dataset is too large for your computer's RAM. Consider using Polars or DuckDB.")
+        print("Error: The dataset is too large for your computer's RAM. Consider using Polars or DuckDB, or simply buy more RAM.")
     except Exception as e:
         print(f"An unexpected error occurred: {e}")
 
 if __name__ == "__main__":
     if len(sys.argv) != 5:
-        print("Usage: python PandasPlace.py 2022-04-01 12 2022-04-01 13")
+        print("Usage: python PandasPlace.py 2022-04-04 12 2022-04-04 13")
     else:
         # Constructing the date strings from command line arguments
         start_arg = f"{sys.argv[1]} {sys.argv[2]}"
